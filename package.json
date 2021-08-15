@@ -1,0 +1,17 @@
+{
+  "name": "website-image-proxy",
+  "version": "0.1.0",
+  "description": "Simple proxy that serves a website as an image",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Miha Lunar",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "fastify": "^3.20.2",
+    "puppeteer": "^10.0.0"
+  }
+}
