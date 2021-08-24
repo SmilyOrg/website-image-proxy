@@ -2,9 +2,17 @@ version: "3.9"
 services:
   server:
     build: .
+    
+    # Avoid zombie processes
+    # See https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-in-docker
+    init: true
+    
+    # Better reliability running Chrome in Docker
+    # See https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#tips
+    cap_add:
+      - SYS_ADMIN
+
     ports:
       - "8000:8000"
     environment:
-      - NO_SANDBOX=true
-      - PORT
       - URL
