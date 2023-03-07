@@ -20,6 +20,9 @@ if (!websiteUrl) {
   process.exit(1);
 }
 
+const username = process.env.USERNAME;
+const password = process.env.PASSWORD;
+
 const updateTimeMargin = getInt(process.env.UPDATE_TIME_MARGIN, 10000);
 const postLoadDelay = getInt(process.env.POST_LOAD_DELAY, 2000);
 
@@ -69,14 +72,34 @@ async function updateScreenshot(log) {
       // Try to speed up any animations
       await page._client.send('Animation.setPlaybackRate', { playbackRate: 20 });
       
+      if (username && password) {
+        log.info("update login checking");
+        log.info(`update wait ${postLoadDelay}ms`);
+        await new Promise(resolve => setTimeout(resolve, postLoadDelay));
+        const hasLogin = await page.evaluate(() => {
+          return !!(
+            document.querySelector(`[type="text"]`) &&
+            document.querySelector(`[type="password"]`)
+          );
+        });
+        log.info("update login found: " + hasLogin);
+        if (hasLogin) {
+          await page.type(`[type="text"]`, username);
+          await page.type(`[type="password"]`, password);
+          await page.keyboard.press("Enter");
+        }
+      }
+      
       // Wait until everything is loaded
+      log.info("update wait for navigation");
       await page.waitForNavigation({
         waitUntil: 'networkidle0',
       });
-      
+
       // Waiting for some time can help when additional content is still loading
       // in asynchronously. Without the website telling you, you can't really
       // know when it's "really" loaded, so this is a good enough approximation.
+      log.info(`update wait ${postLoadDelay}ms`);
       await new Promise(resolve => setTimeout(resolve, postLoadDelay));
 
       log.info("update screenshot");
